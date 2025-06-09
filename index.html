@@ -130,6 +130,50 @@
     z-index: 1;
   }
 
+  /* Styles par défaut (desktop) */
+  nav button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 5px;
+  }
+  
+  /* Pour écrans <= 600px (téléphones) */
+  @media (max-width: 600px) {
+    nav button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin: 3px;
+      width: 100%;  /* bouton prend toute la largeur */
+    }
+    
+    .content {
+      padding: 10px;
+    }
+    
+    /* Par exemple, empile les boutons au lieu de les mettre côte à côte */
+    nav {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+
+  #menuButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* passe à la ligne si trop large */
+    justify-content: center;
+  }
+  
+  @media (max-width: 600px) {
+    #menuButtons {
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+
+  
 
   /* Animation qui fait défiler le dégradé arc-en-ciel */
   @keyframes rainbow-border-move {
