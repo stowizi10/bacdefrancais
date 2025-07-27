@@ -1,491 +1,151 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>FC25 Manager - Équipe</title>
+  <meta charset="UTF-8">
+  <title>Révise ton anglais !</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
+      font-family: sans-serif;
+      background: #f0f4f8;
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #0b0e14;
-      color: #fff;
-    }
-    header {
-      background: #1f6feb;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    nav {
-      display: flex;
-      justify-content: space-around;
-      background: #161b22;
-      padding: 0.5rem 0;
-    }
-    nav button {
-      background: none;
-      color: white;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    nav button:hover {
-      color: #58a6ff;
-    }
-
-    .container {
-      padding: 1rem;
-    }
-
-    .tab, .subtab {
-      display: none;
-    }
-    .active {
-      display: block;
-    }
-
-    .subnav {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .subnav button {
-      background: #21262d;
-      border: none;
-      padding: 0.5rem 1rem;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .subnav button:hover {
-      background: #2d333b;
-    }
-
-    .field {
-      position: relative;
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      background: linear-gradient(green, #005000);
-      aspect-ratio: 2 / 3;
-      border: 2px solid #fff;
-      border-radius: 10px;
-    }
-    .player {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background: #1f6feb;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 60px;
-      font-weight: bold;
-      color: white;
-      cursor: grab;
-      user-select: none;
-    }
-
-    .player:hover {
-      background: #2e8bff;
-    }
-
-    .player.dragging {
-      opacity: 0.5;
-    }
-
-    /* Popup menu */
-    .popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #161b22;
       padding: 20px;
-      border-radius: 10px;
-      z-index: 999;
-      display: none;
-      width: 300px;
-    }
-
-    .popup h3 {
-      margin-top: 0;
-    }
-
-    .popup ul {
-      list-style: none;
-      padding: 0;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .popup li {
-      padding: 10px;
-      background: #21262d;
-      margin-bottom: 5px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .popup li:hover {
-      background: #2d333b;
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 998;
-      display: none;
-    }
-
-    /* Bench and Reserves style */
-    #bench, #reserves {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    /* Reserves players relative positioning */
-    #bench .player, #reserves .player {
-      position: relative;
-      width: 60px;
-      height: 60px;
-      line-height: 60px;
-      cursor: grab;
-    }
-
-    /* Composition selector */
-    #formationSelector {
-      margin-top: 15px;
       text-align: center;
     }
-    #formationSelector label {
-      color: #fff;
-      margin-right: 10px;
-      font-weight: bold;
+    h1 {
+      color: #2c3e50;
     }
-    #formationSelector select {
-      font-size: 1rem;
-      padding: 5px 10px;
-      border-radius: 6px;
+    #words {
+      margin-top: 20px;
+    }
+    .word {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin: 10px auto;
+      padding: 15px;
+      max-width: 400px;
+    }
+    .word span {
+      display: block;
+      font-weight: bold;
+      color: #34495e;
+      font-size: 1.2em;
+    }
+    .definition {
+      margin-top: 5px;
+      color: #555;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
       border: none;
-      background: #21262d;
+      background: #3498db;
       color: white;
+      border-radius: 8px;
+      font-size: 1em;
       cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
     }
   </style>
 </head>
 <body>
+  <h1>🎓 5 mots d'anglais du jour</h1>
+  <div id="words"></div>
+  <button onclick="askNotificationPermission()">Activer les notifications à 18h</button>
 
-<header>FC25 Manager - Mode Équipe</header>
+  <script>
+    const wordList = [
+      { en: "apple", fr: "pomme" },
+      { en: "house", fr: "maison" },
+      { en: "dog", fr: "chien" },
+      { en: "sky", fr: "ciel" },
+      { en: "water", fr: "eau" },
+      { en: "sun", fr: "soleil" },
+      { en: "book", fr: "livre" },
+      { en: "school", fr: "école" },
+      { en: "music", fr: "musique" },
+      { en: "happy", fr: "heureux" },
+      { en: "fast", fr: "rapide" },
+      { en: "tree", fr: "arbre" },
+      { en: "love", fr: "amour" },
+      { en: "game", fr: "jeu" },
+      { en: "light", fr: "lumière" },
+      { en: "road", fr: "route" },
+      { en: "city", fr: "ville" },
+      { en: "cold", fr: "froid" },
+      { en: "hot", fr: "chaud" },
+      { en: "beach", fr: "plage" },
+      { en: "friend", fr: "ami" },
+      { en: "family", fr: "famille" },
+      { en: "night", fr: "nuit" },
+      { en: "day", fr: "jour" },
+      { en: "car", fr: "voiture" }
+    ];
 
-<nav>
-  <button onclick="showTab('team')">Équipe</button>
-  <button onclick="showTab('transfers')">Transferts</button>
-  <button onclick="showTab('finances')">Finances</button>
-</nav>
-
-<div class="container">
-  <!-- ÉQUIPE -->
-  <div id="team" class="tab active">
-    <div class="subnav">
-      <button onclick="showSubTab('team-home')">Accueil</button>
-      <button onclick="showSubTab('team-compo')">Composition</button>
-      <button onclick="showSubTab('team-stats')">Stats</button>
-    </div>
-
-    <div id="team-home" class="subtab active">
-      <h2>Accueil Équipe</h2>
-      <p>Ici vous retrouverez les infos clés : capitaine, tactique, forme physique.</p>
-    </div>
-
-    <div id="team-compo" class="subtab">
-      <h2>Composition - Cliquez pour modifier</h2>
-      <div class="field" id="field"></div>
-      <br>
-      <h3>Remplaçants</h3>
-      <div id="bench"></div>
-      <h3>Réservistes</h3>
-      <div id="reserves"></div>
-
-      <!-- Sélecteur de formation -->
-      <div id="formationSelector">
-        <label for="formation">Choisir la formation :</label>
-            <select id="formationSelect" onchange="applyFormation(this.value)">
-            <option value="4-3-3">4-3-3</option>
-            <option value="4-4-2">4-4-2</option>
-            <option value="3-5-2">3-5-2</option>
-            <option value="5-3-2">5-3-2</option>
-            <option value="4-2-3-1">4-2-3-1</option>
-            </select>
-
-
-      </div>
-    </div>
-
-    <div id="team-stats" class="subtab">
-      <h2>Statistiques des Joueurs</h2>
-      <ul id="playerStats"></ul>
-    </div>
-  </div>
-
-  <div id="transfers" class="tab">Transferts (à venir)</div>
-  <div id="finances" class="tab">Finances (à venir)</div>
-</div>
-
-<!-- MENU POPUP -->
-<div class="overlay" id="overlay" onclick="closePopup()"></div>
-<div class="popup" id="popup">
-  <h3>Choisir un joueur</h3>
-  <ul id="playerList"></ul>
-</div>
-
-<!-- ZONE DE TEXTE PARTAGÉE POUR TEST FIREBASE -->
-<div style="margin:20px; padding:10px; border:1px solid #ccc;">
-  <h3>Zone de texte partagée (test Firebase)</h3>
-  <textarea id="sharedTextarea" style="width:90vw; height:150px;" placeholder="Tape ici et ça s'affiche chez l'autre en direct"></textarea>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
-
-<script>
-  // Config Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyAqjj8E3tYC-7FoyrFYApEGF5iD2b7OWj4",
-    authDomain: "managerfoot-e7baf.firebaseapp.com",
-    projectId: "managerfoot-e7baf",
-    storageBucket: "managerfoot-e7baf.appspot.com",
-    messagingSenderId: "248574813144",
-    appId: "1:248574813144:web:796f4da9df403ddde888ad"
-  };
-
-  // Initialisation
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-
-  const fullSquad = [
-    "Mbappé", "Griezmann", "Kanté", "Theo", "Upamecano", "Lloris",
-    "Giroud", "Camavinga", "Saliba", "Coman", "Tchouaméni",
-    "Nkunku", "Dembélé", "Maignan", "Pavard", "Kolo Muani",
-    "Clauss", "Rabiot", "Konaté", "Fofana"
-  ];
-
-  const players = [
-    { name: "", x: 30, y: 25 }, { name: "", x: 50, y: 25 }, { name: "", x: 40, y: 10 },
-    { name: "", x: 20, y: 50 }, { name: "", x: 40, y: 50 }, { name: "", x: 60, y: 50 },
-    { name: "", x: 10, y: 70 }, { name: "", x: 30, y: 70 }, { name: "", x: 55, y: 70 }, { name: "", x: 75, y: 70 },
-    { name: "", x: 42, y: 90 }
-  ];
-
-  let selectedZone = 'starter';
-  let selectedPlayerIndex = null;
-
-  const bench = Array(7).fill().map(() => ({ name: "" }));
-  let reserves = [];
-
-  function assignFullSquad() {
-    let index = 0;
-    for (let i = 0; i < players.length && index < fullSquad.length; i++, index++) {
-      players[i].name = fullSquad[index];
+    function getTodayIndex() {
+      const startDate = new Date("2024-01-01");
+      const today = new Date();
+      const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+      return diffDays;
     }
-    for (let i = 0; i < bench.length && index < fullSquad.length; i++, index++) {
-      bench[i].name = fullSquad[index];
+
+    function getTodayWords() {
+      const index = getTodayIndex();
+      const todayWords = [];
+      for (let i = 0; i < 5; i++) {
+        const word = wordList[(index * 5 + i) % wordList.length];
+        todayWords.push(word);
+      }
+      return todayWords;
     }
-    while (index < fullSquad.length) {
-      reserves.push({ name: fullSquad[index++] });
-    }
-  }
 
-  function renderPlayers() {
-    const field = document.getElementById('field');
-    const benchDiv = document.getElementById('bench');
-    const reservesDiv = document.getElementById('reserves');
-
-    field.innerHTML = '';
-    benchDiv.innerHTML = '';
-    reservesDiv.innerHTML = '';
-
-    players.forEach((p, index) => {
-      const div = document.createElement('div');
-      div.className = 'player';
-      div.draggable = true;
-      div.innerText = p.name;
-      div.style.left = `${p.x}%`;
-      div.style.top = `${p.y}%`;
-      div.dataset.index = index;
-      div.dataset.zone = 'starter';
-      addDragEvents(div);
-      div.addEventListener('click', () => {
-        selectedPlayerIndex = index;
-        selectedZone = 'starter';
-        openPlayerDetails(p);
+    function displayWords() {
+      const container = document.getElementById("words");
+      const words = getTodayWords();
+      container.innerHTML = "";
+      words.forEach(word => {
+        const div = document.createElement("div");
+        div.className = "word";
+        div.innerHTML = `<span>${word.en}</span><div class="definition">= ${word.fr}</div>`;
+        container.appendChild(div);
       });
-      field.appendChild(div);
-    });
-
-    bench.forEach((p, index) => {
-      const div = document.createElement('div');
-      div.className = 'player';
-      div.style.position = 'relative';
-      div.style.left = '0';
-      div.style.top = '0';
-      div.innerText = p.name;
-      div.dataset.index = index;
-      div.dataset.zone = 'bench';
-      div.draggable = true;
-      addDragEvents(div);
-      div.addEventListener('click', () => {
-        selectedPlayerIndex = index;
-        selectedZone = 'bench';
-        openPlayerDetails(p);
-      });
-      benchDiv.appendChild(div);
-    });
-
-    reserves.forEach((p, index) => {
-      const div = document.createElement('div');
-      div.className = 'player';
-      div.style.position = 'relative';
-      div.style.left = '0';
-      div.style.top = '0';
-      div.innerText = p.name;
-      div.dataset.index = index;
-      div.dataset.zone = 'reserves';
-      div.draggable = true;
-      addDragEvents(div);
-      div.addEventListener('click', () => {
-        selectedPlayerIndex = index;
-        selectedZone = 'reserves';
-        openPlayerDetails(p);
-      });
-      reservesDiv.appendChild(div);
-    });
-  }
-
-  const formations = {
-    "4-3-3": [
-        { x: 45, y: 90 },  // Gardien (50-5, 95-5)
-        { x: 10, y: 75 }, { x: 30, y: 75 }, { x: 60, y: 75 }, { x: 80, y: 75 },
-        { x: 25, y: 55 }, { x: 45, y: 50 }, { x: 65, y: 55 },
-        { x: 15, y: 35 }, { x: 45, y: 30 }, { x: 75, y: 35 }
-    ],
-    "4-4-2": [
-        { x: 45, y: 90 },
-        { x: 10, y: 75 }, { x: 30, y: 75 }, { x: 60, y: 75 }, { x: 80, y: 75 },
-        { x: 15, y: 55 }, { x: 35, y: 55 }, { x: 55, y: 55 }, { x: 75, y: 55 },
-        { x: 30, y: 35 }, { x: 60, y: 35 }
-    ],
-    "3-5-2": [
-        { x: 45, y: 90 },
-        { x: 20, y: 75 }, { x: 45, y: 75 }, { x: 70, y: 75 },
-        { x: 10, y: 60 }, { x: 30, y: 60 }, { x: 45, y: 50 }, { x: 60, y: 60 }, { x: 80, y: 60 },
-        { x: 35, y: 35 }, { x: 55, y: 35 }
-    ],
-    "5-3-2": [
-        { x: 45, y: 90 },
-        { x: 5, y: 75 }, { x: 25, y: 75 }, { x: 45, y: 75 }, { x: 65, y: 75 }, { x: 85, y: 75 },
-        { x: 30, y: 55 }, { x: 45, y: 50 }, { x: 60, y: 55 },
-        { x: 35, y: 35 }, { x: 55, y: 35 }
-    ],
-    "4-2-3-1": [
-        { x: 45, y: 90 },
-        { x: 10, y: 75 }, { x: 30, y: 75 }, { x: 60, y: 75 }, { x: 80, y: 75 },
-        { x: 25, y: 60 }, { x: 65, y: 60 },
-        { x: 15, y: 45 }, { x: 45, y: 40 }, { x: 75, y: 45 },
-        { x: 45, y: 30 }
-    ]
-    };
-
-
-
-
-    function applyFormation(name) {
-    if (!formations[name]) return;
-    const formationPositions = formations[name];
-    for (let i = 0; i < players.length; i++) {
-        players[i].x = formationPositions[i].x;
-        players[i].y = formationPositions[i].y;
-    }
-    renderPlayers();
     }
 
+    function askNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("Ce navigateur ne supporte pas les notifications.");
+        return;
+      }
 
-  function showTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(tab).classList.add('active');
-    if (tab === 'team') renderPlayers();
-  }
-
-  function showSubTab(id) {
-    document.querySelectorAll('.subtab').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  function addDragEvents(el) {
-    el.addEventListener('dragstart', (event) => {
-        event.dataTransfer.setData('text/plain', JSON.stringify({
-        index: el.dataset.index,
-        zone: el.dataset.zone
-        }));
-    });
-
-    el.addEventListener('dragover', (e) => {
-        e.preventDefault();
-    });
-
-    el.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const sourceData = JSON.parse(e.dataTransfer.getData('text/plain'));
-        const targetIndex = parseInt(el.dataset.index);
-        const targetZone = el.dataset.zone;
-
-        // Bloquer échange starter <-> starter
-        if (sourceData.zone === 'starter' && targetZone === 'starter') {
-        return; // ne rien faire, bloquer
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          scheduleDailyNotification();
+          alert("Notification quotidienne programmée à 18h !");
         }
-
-        let sourceList = sourceData.zone === 'starter' ? players : sourceData.zone === 'bench' ? bench : reserves;
-        let targetList = targetZone === 'starter' ? players : targetZone === 'bench' ? bench : reserves;
-
-        const temp = sourceList[sourceData.index].name;
-        sourceList[sourceData.index].name = targetList[targetIndex].name;
-        targetList[targetIndex].name = temp;
-
-        renderPlayers();
-    });
+      });
     }
 
+    function scheduleDailyNotification() {
+      setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 18 && now.getMinutes() === 0) {
+          showNotification();
+        }
+      }, 60000); // Vérifie toutes les 60 secondes
+    }
 
-  function openPlayerDetails(player) {
-    const overlay = document.getElementById('overlay');
-    const popup = document.getElementById('popup');
-    const list = document.getElementById('playerList');
-    list.innerHTML = '';
+    function showNotification() {
+      const words = getTodayWords().map(w => `${w.en} = ${w.fr}`).join("\n");
+      new Notification("🕕 Il est 18h !", {
+        body: "Voici tes mots du jour :\n" + words
+      });
+    }
 
-    const details = document.createElement('div');
-    details.innerHTML = `<h3>${player.name}</h3><p>Âge : ${18 + Math.floor(Math.random() * 15)}</p><p>Note : ${70 + Math.floor(Math.random() * 30)}</p>`;
-    list.appendChild(details);
-
-    overlay.style.display = 'block';
-    popup.style.display = 'block';
-  }
-
-  function closePopup() {
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('popup').style.display = 'none';
-  }
-
-  assignFullSquad();
-  renderPlayers();
-</script>
-
-
+    // Affiche les mots au chargement
+    displayWords();
+  </script>
 </body>
 </html>
-
