@@ -86,10 +86,14 @@
     <div id="progress-bar"></div>
   </div>
   <div id="words"></div>
-  <button onclick="askNotificationPermission()">Activer les notifications à 21h05</button>
+  <button onclick="askNotificationPermission()">Activer les notifications quotidiennes</button>
   <div id="installInfo">📱 Pour installer l'app : menu → "Ajouter à l'écran d'accueil"</div>
 
   <script>
+    // 🕘 Tu peux modifier ici l'heure de notification
+    const notificationHour = 21;     // entre 0 et 23
+    const notificationMinute = 5;    // entre 0 et 59
+
     const wordList = [
       { en: "apple", fr: "pomme" },
       { en: "house", fr: "maison" },
@@ -192,7 +196,7 @@
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
           scheduleDailyNotification();
-          alert("Notification programmée à 21h05 !");
+          alert(`Notification programmée à ${String(notificationHour).padStart(2, '0')}h${String(notificationMinute).padStart(2, '0')}`);
         }
       });
     }
@@ -200,20 +204,20 @@
     function scheduleDailyNotification() {
       setInterval(() => {
         const now = new Date();
-        if (now.getHours() === 21 && now.getMinutes() === 5) {
+        if (now.getHours() === notificationHour && now.getMinutes() === notificationMinute) {
           showNotification();
         }
-      }, 60000); // vérifie toutes les minutes
+      }, 60000); // Vérifie toutes les minutes
     }
 
     function showNotification() {
       const words = getTodayWords().map(w => `${w.en} = ${w.fr}`).join("\n");
-      new Notification("🕘 Il est 21h05 !", {
+      new Notification("📚 Il est l'heure de réviser !", {
         body: "Voici tes mots du jour :\n" + words
       });
     }
 
-    // Service Worker pour installation PWA
+    // Service Worker pour PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
