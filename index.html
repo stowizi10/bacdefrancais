@@ -2,11 +2,12 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Révise ton anglais !</title>
+  <title>Révise ton anglais</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       background: #f0f4f8;
       margin: 0;
       padding: 20px;
@@ -14,6 +15,20 @@
     }
     h1 {
       color: #2c3e50;
+    }
+    #progress {
+      width: 80%;
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      margin: 20px auto;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      background: #27ae60;
+      width: 0%;
+      transition: width 0.3s;
     }
     #words {
       margin-top: 20px;
@@ -25,6 +40,15 @@
       margin: 10px auto;
       padding: 15px;
       max-width: 400px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .word:hover {
+      transform: scale(1.02);
+    }
+    .word.learned {
+      background: #d1f7d1;
+      text-decoration: line-through;
     }
     .word span {
       display: block;
@@ -49,12 +73,21 @@
     button:hover {
       background: #2980b9;
     }
+    #installInfo {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <h1>🎓 5 mots d'anglais du jour</h1>
+  <div id="progress">
+    <div id="progress-bar"></div>
+  </div>
   <div id="words"></div>
-  <button onclick="askNotificationPermission()">Activer les notifications à 18h</button>
+  <button onclick="askNotificationPermission()">Activer les notifications à 21h05</button>
+  <div id="installInfo">📱 Pour installer l'app : menu → "Ajouter à l'écran d'accueil"</div>
 
   <script>
     const wordList = [
@@ -85,6 +118,8 @@
       { en: "car", fr: "voiture" }
     ];
 
+    const todayKey = () => `words_${new Date().toDateString()}`;
+
     function getTodayIndex() {
       const startDate = new Date("2024-01-01");
       const today = new Date();
@@ -94,24 +129,58 @@
 
     function getTodayWords() {
       const index = getTodayIndex();
-      const todayWords = [];
+      const words = [];
       for (let i = 0; i < 5; i++) {
         const word = wordList[(index * 5 + i) % wordList.length];
-        todayWords.push(word);
+        words.push(word);
       }
-      return todayWords;
+      return words;
+    }
+
+    function loadLearnedWords() {
+      return JSON.parse(localStorage.getItem(todayKey())) || [];
+    }
+
+    function saveLearnedWords(words) {
+      localStorage.setItem(todayKey(), JSON.stringify(words));
+    }
+
+    function updateProgress(learnedCount) {
+      const percent = (learnedCount / 5) * 100;
+      document.getElementById("progress-bar").style.width = percent + "%";
     }
 
     function displayWords() {
       const container = document.getElementById("words");
-      const words = getTodayWords();
+      const todayWords = getTodayWords();
+      const learnedWords = loadLearnedWords();
       container.innerHTML = "";
-      words.forEach(word => {
+      let learnedCount = 0;
+
+      todayWords.forEach(word => {
         const div = document.createElement("div");
         div.className = "word";
         div.innerHTML = `<span>${word.en}</span><div class="definition">= ${word.fr}</div>`;
+        if (learnedWords.includes(word.en)) {
+          div.classList.add("learned");
+          learnedCount++;
+        }
+
+        div.onclick = () => {
+          let learned = loadLearnedWords();
+          if (learned.includes(word.en)) {
+            learned = learned.filter(w => w !== word.en);
+          } else {
+            learned.push(word.en);
+          }
+          saveLearnedWords(learned);
+          displayWords();
+        };
+
         container.appendChild(div);
       });
+
+      updateProgress(learnedCount);
     }
 
     function askNotificationPermission() {
@@ -123,7 +192,7 @@
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
           scheduleDailyNotification();
-          alert("Notification quotidienne programmée à 18h !");
+          alert("Notification programmée à 21h05 !");
         }
       });
     }
@@ -131,20 +200,24 @@
     function scheduleDailyNotification() {
       setInterval(() => {
         const now = new Date();
-        if (now.getHours() === 18 && now.getMinutes() === 0) {
+        if (now.getHours() === 21 && now.getMinutes() === 5) {
           showNotification();
         }
-      }, 60000); // Vérifie toutes les 60 secondes
+      }, 60000); // vérifie toutes les minutes
     }
 
     function showNotification() {
       const words = getTodayWords().map(w => `${w.en} = ${w.fr}`).join("\n");
-      new Notification("🕕 Il est 18h !", {
+      new Notification("🕘 Il est 21h05 !", {
         body: "Voici tes mots du jour :\n" + words
       });
     }
 
-    // Affiche les mots au chargement
+    // Service Worker pour installation PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
     displayWords();
   </script>
 </body>
